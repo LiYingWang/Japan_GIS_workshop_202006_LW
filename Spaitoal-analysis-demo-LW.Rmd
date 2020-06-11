@@ -56,15 +56,20 @@ ggplot(data = world) +
   theme_minimal()
 ```
 
+select countries we want to show the text, demonstrate and explain each line (5 mins)
 Exercise: make a regional map (7 mins), combining two chunks
 
 ```{r create-labels-on-map}
 library(tidyverse)
 library(sf)
 world_points <- st_centroid(world) # for the text labels
-world_points <- cbind(world, st_coordinates(st_centroid(world$geometry))) %>%
+
+world_points <-
+  world %>%
+  bind_cols(st_coordinates(st_centroid(world$geometry))) %>%
   filter(name %in% c("Japan", "China", "Korea", "Taiwan", "Russia",
                      "Philippines", "Vietnam", "Mongolia"))
+
 ```
 
 ```{r Japan-regional-map}
@@ -88,7 +93,7 @@ JP_NE_Asia <-
         axis.title.y = element_blank())
 ```
 
-set up set location, demostrate and explain each line (5 mins)
+define site location, demonstrate and explain each line (5 mins)
 Exercise: make a site map (7 mins), combine two chunks 
 
 ```{r site-location}
@@ -150,6 +155,7 @@ site_Japan <-
         axis.title.y = element_blank())
 ```
 
+save your plot
 Exercise: save the map to your folder (2 mins)
 
 ```{r save-map}
@@ -161,13 +167,25 @@ ggsave(here::here("Japan-site-map.jpg"),
 ```
 
 Introduction of vector and raster data (7 mins)
-download raster data for Japan: https://www.gsi.go.jp/kankyochiri/gm_japan_e.html
+download raster data for Japan: https://www.gsi.go.jp/kankyochiri/gm_japan_e.html (1 mins)
 Exercise: crop the area we want and plot it (7 mins)
 
 ```{r get-raster-data}
 library(raster)
+
+# download the zip file into our data folder
+download.file("https://github.com/LiYingWang/Japan_GIS_workshop_202006_LW/blob/master/gm-jpn-el_u_1_1.zip", "data/raster-data.zip")
+# unzip to the data folder
+unzip(zipfile = "data/raster-data.zip", exdir = "data")
+# delete zip file
+unlink("data/raster-data.zip")
+# read in data from data folder
 DEM_Japan <- raster(here::here("gm-jpn-el_u_1_1", "jpn", "el.tif"))
+
+# assign coordinate reference system
 crs(DEM_Japan) <- "+proj=lcc +lat_1=41.03333333333333 +lat_2=40.66666666666666 +lat_0=40.16666666666666 +lon_0=-74 +x_0=300000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=us-ft +no_defs"
+
+plot(DEM_Japan) # take a look at raster data
 
 # crop the DEM area of the site from scratch 
 x_coord <- c(135.3, 135.3, 136, 136, 135.3)
@@ -183,8 +201,8 @@ crop_DEM <- crop(DEM_Japan, sps)
 summary(crop_DEM)
 ```
 
-plot the cropped raster data
-
+we want to crop the area we want (2 mins), demostrate the layers
+Exercise: convert to data frame for ggplot, and then plot the cropped raster data (5 mins)
 ```{r plot-raster-data}
 crop_DEM_df <- as.data.frame(crop_DEM, xy = TRUE)
 
@@ -195,7 +213,7 @@ ggplot() +
   coord_quickmap()
 ```
 
-talk about sahpefile, read and add the shapefile (site location) onto raster data (5 mins)
+talk about sahpefile, read and add the shapefile (site location) onto raster data (7 mins)
 Exercise: map shapefile and the DEM raster layer (5 mins)
 
 ```{r read-shapefile}
@@ -228,18 +246,92 @@ sites_location %>%
   theme_minimal()
 ```
 
-point pattern analysis
+density analysis and tell us the distribution of site, cover issue of missing data (5 mins)
+point pattern analysis, kernel density analysis tells us the pattern (5 mins)
+Exercise: create object and plot kernel density plot (7 mins)  
 
 ```{r}
 library(spatstat)
 library(maptools)
 
-sites_location <-
-  extract(geometry, c('lat', 'lon'), '\\((.*), (.*)\\)', convert = TRUE) )
+sites_location_coords <-
+  sites_location %>% 
+  st_coordinates() %>% 
+  as.data.frame 
 
-K1 <- density(sp_sites_location) # Using the default bandwidth
+plot(sites_location_coords)
+
+sites_location_ppp <- ppp(x = sites_location_coords$X,
+                          y = sites_location_coords$Y,
+                          range(sites_location_coords$X), # set range
+                          range(sites_location_coords$Y))
+
+K1 <- density(sites_location_ppp) 
+
 plot(K1, main=NULL, las=1)
 contour(K1, add=TRUE)
 ```
 
+hypothesis testing to determine the distribution is random or non-random (5 mins)
+Exercise: simulation and plot the histogram (7 mins)
 
+```{r}
+ann_p <- mean(nndist(sites_location_ppp, k=1))
+n     <- 1000 # Number of simulations
+
+ann_r <- vector(length = n) # an object for storing simulated ANN values
+
+# simulation
+for (i in 1:n){
+  rand_p   <- rpoint(sites_location_ppp$n, 
+                     win = as.owin(crop_DEM_df))  # Generate random point locations
+  ann_r[i] <- mean(nndist(rand_p, k=1))  # Tally the ANN values
+}
+
+# plot the histogram and add our observed ANN value line
+hist(ann_r, main=NULL, las=1, breaks=40, 
+     col = "bisque", 
+     xlim = range(ann_p, ann_r))
+abline(v = ann_p, col="blue")
+```
+
+only Look at only Kofun period
+
+```{r}
+sites_location_coords_kofun <-
+  sites_location %>% 
+  st_coordinates() %>% 
+  as.data.frame () %>% 
+  bind_cols(sites_location) %>% 
+  filter(Period == "Kofun")
+
+sites_location_ppp_kofun <- (ppp(x = sites_location_coords_kofun$X,
+                                 y = sites_location_coords_kofun$Y,
+                                 range(sites_location_coords_kofun$X),
+                                 range(sites_location_coords_kofun$Y))) 
+
+K2 <- density(sites_location_ppp_kofun) 
+
+plot(K2, main=NULL, las=1)
+contour(K2, add=TRUE)
+```
+
+```{r}
+ann_p <- mean(nndist(sites_location_ppp_kofun, k=1))
+n     <- 1000 # Number of simulations
+
+ann_r <- vector(length = n) # an object for storing simulated ANN values
+
+# simulation
+for (i in 1:n){
+  rand_p   <- rpoint(sites_location_ppp_kofun$n, 
+                     win = as.owin(crop_DEM_df))  # Generate random point locations
+  ann_r[i] <- mean(nndist(rand_p, k=1))  # Tally the ANN values
+}
+
+# plot the histogram and add our observed ANN value line
+hist(ann_r, main=NULL, las=1, breaks=40, 
+     col = "bisque", 
+     xlim = range(ann_p, ann_r))
+abline(v = ann_p, col="blue")
+```
