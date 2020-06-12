@@ -62,11 +62,13 @@ Exercise: make a regional map (7 mins), combining two chunks
 ```{r create-labels-on-map}
 library(tidyverse)
 library(sf)
-world_points <- st_centroid(world) # for the text labels
+
+country_centre_coords <-
+  as_tibble(st_coordinates(st_centroid(world$geometry))) # for the text labels
 
 world_points <-
   world %>%
-  bind_cols(st_coordinates(st_centroid(world$geometry))) %>%
+  bind_cols(country_centre_coords) %>%
   filter(name %in% c("Japan", "China", "Korea", "Taiwan", "Russia",
                      "Philippines", "Vietnam", "Mongolia"))
 
@@ -174,7 +176,7 @@ Exercise: crop the area we want and plot it (7 mins)
 library(raster)
 
 # download the zip file into our data folder
-download.file("https://github.com/LiYingWang/Japan_GIS_workshop_202006_LW/blob/master/data/gm-jpn-el_u_1_1.zip", "data/raster-data.zip")
+download.file("https://github.com/LiYingWang/Japan_GIS_workshop_202006_LW/raw/master/data/gm-jpn-el_u_1_1.zip", "data/raster-data.zip")
 # unzip to the data folder
 unzip(zipfile = "data/raster-data.zip", exdir = "data")
 # delete zip file
@@ -217,7 +219,14 @@ talk about sahpefile, read and add the shapefile (site location) onto raster dat
 Exercise: map shapefile and the DEM raster layer (5 mins)
 
 ```{r read-shapefile}
-sites_location <- st_read(here::here("sites_example.shp"))
+# download the zip file into our data folder
+download.file("https://github.com/LiYingWang/Japan_GIS_workshop_202006_LW/raw/master/data/shapefile.zip", "data/site_shapefile.zip")
+# unzip to the data folder
+unzip(zipfile = "data/site_shapefile.zip", exdir = "data")
+# delete zip file
+unlink("data/site_shapefile.zip")
+
+sites_location <- st_read(here::here("shapefile", "sites_example.shp"))
 
 ggplot() +
   geom_raster(data = crop_DEM_df, aes(x = x, y = y, fill = el)) +
