@@ -9,6 +9,8 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+# Introduction
+
 In this workshop, you will learn how to use R to manipulate and visualize spatial data of interest to archaeologists. This rmd file is a demonstration of code and you will work on it step by step to get familiar with spatial data and basic analysis. There are three main topics covered in this workshop:
 
 -Part 1: making maps, including regional map and site map
@@ -17,28 +19,19 @@ In this workshop, you will learn how to use R to manipulate and visualize spatia
 
 Before getting started, let's install all packages we will use!
  
-# Exercise: install packages (3 mins) 
+## Set up: install packages (5 mins) 
 
-```{r install-packages}
-install.packages(c("rnaturalearth", 
-                   "rnaturalearthdata", 
-                   "tidyverse", 
-                   "sf", 
-                   "sp",
-                   "shadowtext", 
-                   "ggmap", 
-                   "ggspatial", 
-                   "raster", 
-                   "spatstat", 
-                   "maptools"))
+Copy and paste the code on your console and run it: 
+install.packages(c("rnaturalearth", "rnaturalearthdata", "tidyverse", "sf", "sp","shadowtext", "ggmap", "ggspatial", "raster", "spatstat", "maptools"))
+
+Copy and paste the code on your console and run it: 
 devtools::install_github('3wen/legendMap')
-```
 
--Part 1: making maps, including regional map and site map
+# Making maps
 
 Load world data and take a look at the data form, especially the "geometry" column where it stores the coordinates we need for making maps.
 
-# Exercise: load data and check it (2 mins)
+## Exercise 1: load data and plot the world map (5 mins)
 
 ```{r load-world-map-data}
 library(rnaturalearth) # provides world map
@@ -47,11 +40,7 @@ library(rnaturalearthdata)
 world <- ne_countries(scale = "medium", returnclass = "sf") # pulls country data 
 class(world) # what class it is?
 # type View(world) in your console to take a look at the data frame
-```
 
-# Exercise: plot the world map (2 mins)
-
-```{r plot-world-map}
 library(ggplot2)
 
 # plot basic world map 
@@ -62,7 +51,7 @@ ggplot(data = world) +
 
 Now, we want to plot Japan with some countries around it as our regional map. We may want to indicate the countries by adding name label on it. To do this, we need to get the center of the country for adding country labels, and then specify which countries we want to show their names on the map.
 
-# Exercise: create country labels for the regional map (2 mins)
+## Exercise 2: make a regional map (7 mins)
 
 ```{r create-text-labels}
 library(tidyverse)
@@ -76,13 +65,10 @@ world_points <-
   bind_cols(country_centre_coords) %>%
   filter(name %in% c("Japan", "China", "Korea", "Taiwan", "Russia",
                      "Philippines", "Vietnam", "Mongolia"))
-```
 
-# Exercise: make a regional map (5 mins)
-
-```{r regional-map-with-labels}
 library(shadowtext)
 
+# plot map
 JP_NE_Asia <-
   ggplot(data = world) +
   geom_sf() +
@@ -106,7 +92,7 @@ JP_NE_Asia
 
 We also want to make a map with archaeological sites we are interested in. Since we would add points for sites, we have to specify the coordinates of site location first.
 
-# Exercise: prepare the location of sites (2 mins)
+## Exercise 3: make site map (7 mins)
 
 ```{r site-location}
 # add site location
@@ -114,11 +100,7 @@ site_location <-
   data.frame(location = c("Daisen Kofun", "Todai-ji temple"),
              lon = c(135.487953, 135.839891),
              lat = c(34.564503, 34.688862))
-```
 
-# Exercise: make a site map (7 mins)
-
-```{r site-location-map}
 library(ggmap)
 library(ggspatial)
 library(legendMap)
@@ -168,14 +150,7 @@ site_Japan <-
   theme(axis.title.x = element_blank(),
         axis.title.y = element_blank())
 
-site_Japan
-```
-
-The final step is to save our plot! Use this code right below the plot you want to save. 
-
-# Exercise: save the map to your folder (2 mins)
-
-```{r save-site-map}
+# save the map to your folder 
 ggsave(here::here("Japan-site-map.jpg"),
        width = 60,
        height = 60,
@@ -183,11 +158,11 @@ ggsave(here::here("Japan-site-map.jpg"),
        units = "mm")
 ```
 
--Part 2: learning raster data and vector data, spatial data manipulation, and visualization
+# Raster and vector data
 
 The raster data is DEM data downloaded from https://www.gsi.go.jp/kankyochiri/gm_japan_e.html. We want to crop the area that matches the site map from this DEM data. Here, we use coordinates to create a data frame, convert it to a spatial object, and then use it to crop the raster.
 
-# Exercise: crop an area from raster data (7 mins)
+## Exercise 4: crop an area from raster data (7 mins)
 
 ```{r get-raster-data}
 library(raster)
@@ -222,8 +197,6 @@ summary(crop_DEM)
 
 We can plot the raster data using ggplot function, which allows us to modify axis, legend, and labels displayed on the plot. To use ggplot, we need to convert the cropped raster to a dataframe.
 
-# Exercise: convert raster data to a dataframe for plotting (5 mins)
-
 ```{r plot-raster-data}
 # cover to a dataframe
 crop_DEM_df <- as.data.frame(crop_DEM, xy = TRUE)
@@ -235,9 +208,9 @@ ggplot() +
   coord_quickmap() # plot faster
 ```
 
-Now, let's work on vector data and plot it on the raster. We import a shapefile which contains site locations we want to explore (note: its not a real data). We are curious about the distribution of archaeological sites and how they relate to the elevation of this area. 
+Now, let's work on vector data and plot it on the raster. We import a shapefile which contains site locations we want to explore (note: its not a real data). We are curious about the distribution of archaeological sites and how they relate to the elevation of this area.
 
-# Exercise: explore shapefile and map it on the raster layer (7 mins)
+## Exercise 5: explore shapefile and map it on the raster layer (7 mins)
 
 ```{r read-shapefile}
 # download the zip file into our data folder
@@ -260,7 +233,7 @@ ggplot() +
 
 We are curious about the elevation of the locations of archaeological sites, and would like to compare sites from two phases: Yayoi and Kofun.
 
-# Exercise: extract elevation and make a plot to compare sites from two phases (5 mins)
+## Exercise 6: extract elevation and make a plot to compare sites from two phases (5 mins)
 
 ```{r elevation-boxplot-two-phases}
 # convert sf (simple feature) to a spatial object
@@ -277,23 +250,25 @@ sites_location %>%
   theme_minimal()
 ```
 
+# Density analysis and hypothesis testing
+
 -Part 3: density analysis of sites and hypothesis testing for their distributions
 
 We may want to know the distribution pattern of the sites across this area. We can visualize the density to check any hot spots using kernal density estimation.
 
-# Exercise: make a kernel density plot (7 mins)
+## Exercise 7: make a kernel density plot (7 mins)
 
 ```{r kernel-plot-all-sites}
 library(spatstat)
 library(maptools)
+
+crop_DEM_df <- as.data.frame(crop_DEM, xy = TRUE)
 
 # get two columns, one longitude and another is latitude
 sites_location_coords <-
   sites_location %>% 
   st_coordinates() %>% 
   as.data.frame 
-
-plot(sites_location_coords)
 
 # convert to ppp object that represent a two-dimensional point pattern
 sites_location_ppp <- ppp(x = sites_location_coords$X,
@@ -309,7 +284,7 @@ contour(K1, add=TRUE)
 
 Is the hot spots we observed significant? We can simulate the site locations and testing our hypothesis to determine if the distribution is random or not random.
 
-# Exercise: simulation and plot the histogram (7 mins)
+## Exercise 8: simulation and plot the histogram (7 mins)
 
 ```{r simulation-all-sites}
 
@@ -330,14 +305,15 @@ for (i in 1:n){
 hist(ann_r, main=NULL, las=1, breaks=40, 
      col = "bisque", 
      xlim = range(ann_p, ann_r))
-abline(v = ann_p, col="blue")
+abline(v = ann_p, col="blue") # the observed value
 ```
 
 We have looked at the distribution of sites all together, but what if we want to focus on sites from a phase; for example, we want to explore Kofun period. We can filter out the phase we want and then use the same method to test the Kofun sites.
 
-# Quiz: Do the Kofun sites ramdonly distributed or non-ramdonly distribution? The pattern is clustterd or dispersed? 
+## Quiz: Do the Kofun sites ramdonly distributed or non-ramdonly distributed? The pattern is clustterd or dispersed? 
 
 ```{r kernel-plot-kofun}
+
 sites_location_coords_kofun <-
   sites_location %>% 
   st_coordinates() %>% 
@@ -347,8 +323,8 @@ sites_location_coords_kofun <-
 
 sites_location_ppp_kofun <- (ppp(x = sites_location_coords_kofun$X,
                                  y = sites_location_coords_kofun$Y,
-                                 range(crop_DEM_df$x$X),
-                                 range(crop_DEM_df$x$Y))) 
+                                 range(crop_DEM_df$x),
+                                 range(crop_DEM_df$y))) 
 
 K2 <- density(sites_location_ppp_kofun) 
 
@@ -375,3 +351,4 @@ hist(ann_r, main=NULL, las=1, breaks=40,
      xlim = range(ann_p, ann_r))
 abline(v = ann_p, col="blue")
 ```
+
