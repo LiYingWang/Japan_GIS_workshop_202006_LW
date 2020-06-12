@@ -33,18 +33,11 @@ devtools::install_github('3wen/legendMap')
 # create data folder to store the raster data 
 dir.create("data")
 # download the raster zip file into our data folder
-download.file("https://github.com/LiYingWang/Japan_GIS_workshop_202006_LW/raw/master/data/gm-jpn-el_u_1_1.zip", "data/raster-data.zip")
+download.file("https://github.com/LiYingWang/Japan_GIS_workshop_202006_LW/raw/master/workshop_data.zip", "data/raster-shapefile.zip")
 # unzip to the data folder
-unzip(zipfile = "data/raster-data.zip", exdir = "data")
+unzip(zipfile = "data/raster-shapefile.zip", exdir = "data")
 # delete zip file
-unlink("data/raster-data.zip")
-
-# download the shapefile zip file into our data folder
-download.file("https://github.com/LiYingWang/Japan_GIS_workshop_202006_LW/raw/master/shapefile/shapefile.zip", "data/site_shapefile.zip")
-# unzip to the data folder
-unzip(zipfile = "data/site_shapefile.zip", exdir = "data")
-# delete zip file
-unlink("data/site_shapefile.zip")
+unlink("data/raster-shapefile.zip")
 ```
 
 # Making maps
@@ -188,7 +181,7 @@ The raster data is DEM data downloaded from https://www.gsi.go.jp/kankyochiri/gm
 library(raster)
 
 # read in data from data folder
-DEM_Japan <- raster(here::here("gm-jpn-el_u_1_1", "jpn", "el.tif"))
+DEM_Japan <- raster("data/workshop_data/jpn/el.tif")
 
 # assign coordinate reference system
 crs(DEM_Japan) <- "+proj=lcc +lat_1=41.03333333333333 +lat_2=40.66666666666666 +lat_0=40.16666666666666 +lon_0=-74 +x_0=300000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=us-ft +no_defs"
@@ -228,7 +221,7 @@ Now, let's work on vector data and plot it on the raster. We import a shapefile 
 
 ```{r read-shapefile}
 # Example of archaeological sites
-sites_location <- st_read(here::here("data", "sites_example.shp"))
+sites_location <- st_read("data/workshop_data/sites_example.shp")
 
 ggplot() +
   geom_raster(data = crop_DEM_df, aes(x = x, y = y, fill = el)) +
