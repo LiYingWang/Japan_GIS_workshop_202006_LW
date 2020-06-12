@@ -242,7 +242,7 @@ unzip(zipfile = "data/site_shapefile.zip", exdir = "data")
 # delete zip file
 unlink("data/site_shapefile.zip")
 
-sites_location <- st_read(here::here("shapefile", "sites_example.shp"))
+sites_location <- st_read(here::here("data","sites_example.shp"))
 
 ggplot() +
   geom_raster(data = crop_DEM_df, aes(x = x, y = y, fill = el)) +
