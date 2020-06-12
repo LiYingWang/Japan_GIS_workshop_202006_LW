@@ -220,6 +220,7 @@ summary(crop_DEM)
 ```
 
 # Exercise: convert raster data to a data frame for plotting (5 mins)
+
 ```{r plot-raster-data}
 crop_DEM_df <- as.data.frame(crop_DEM, xy = TRUE)
 
@@ -252,30 +253,31 @@ ggplot() +
   coord_sf()
 ```
 
-demonstrate how to extract the elevation for each site (5 mins)
-Exercise: extract elevation and make a boxplot to compare different phases (5 mins)
+We are curious about the elevation where the archaeological sites are located, and would like to compare sites from two phases: Yayoi and Kofun
 
-```{r}
+# Exercise: extract elevation and make a boxplot to compare sites from two phases (5 mins)
+
+```{r elevation-boxplot-two-phases}
 # convert sf to a sptaial object
 sp_sites_location <- as(sites_location, "Spatial")
 
 # extract elevation for each site
 elevation <- extract(crop_DEM, sp_sites_location, method = "simple")
 sites_location <- cbind(sites_location, elevation)
-```
 
-```{r elevation-boxplot}
 sites_location %>% 
   ggplot (aes (Period, elevation)) +
   geom_boxplot() +
   theme_minimal()
 ```
 
-density analysis and tell us the distribution of site, cover issue of missing data (5 mins)
-point pattern analysis, kernel density analysis tells us the pattern (5 mins)
-Exercise: create object and plot kernel density plot (7 mins)  
+-Part 3: density analysis of sites and hypothesis testing for their distributions
 
-```{r}
+What is the distribution of the sites across this area? We want to see if there are any hot spots using kernal density estimation.
+
+# Exercise: make a kernel density plot (7 mins)  
+
+```{r kernel-plot-all-sites}
 library(spatstat)
 library(maptools)
 
@@ -297,10 +299,11 @@ plot(K1, main=NULL, las=1)
 contour(K1, add=TRUE)
 ```
 
-hypothesis testing to determine the distribution is random or non-random (5 mins)
-Exercise: simulation and plot the histogram (7 mins)
+Is the hot spots we observed significant? We can simulate the site locations and make hypothesis testing to determine if the distribution is clustered or dispersed. 
 
-```{r}
+# Exercise: simulation and plot the histogram (7 mins)
+
+```{r simulation-all-sites}
 ann_p <- mean(nndist(sites_location_ppp, k=1))
 n     <- 1000 # Number of simulations
 
@@ -320,9 +323,11 @@ hist(ann_r, main=NULL, las=1, breaks=40,
 abline(v = ann_p, col="blue")
 ```
 
-only Look at Kofun period
+We looked at sites all together and now we want to only explore Kofun period. We first separate the phases and then use the same method to test the Kofun sites.
 
-```{r}
+# Quiz: Do the Kofun sites ramdonly distributed or non-ramdonly distribution? The pattern is clustterd or dispersed? 
+
+```{r kernel-plot-kofun}
 sites_location_coords_kofun <-
   sites_location %>% 
   st_coordinates() %>% 
@@ -332,8 +337,8 @@ sites_location_coords_kofun <-
 
 sites_location_ppp_kofun <- (ppp(x = sites_location_coords_kofun$X,
                                  y = sites_location_coords_kofun$Y,
-                                 range(sites_location_coords_kofun$X),
-                                 range(sites_location_coords_kofun$Y))) 
+                                 range(sites_location_coords$X),
+                                 range(sites_location_coords$Y))) 
 
 K2 <- density(sites_location_ppp_kofun) 
 
@@ -341,7 +346,7 @@ plot(K2, main=NULL, las=1)
 contour(K2, add=TRUE)
 ```
 
-```{r}
+```{r simulation-kofun}
 ann_p <- mean(nndist(sites_location_ppp_kofun, k=1))
 n     <- 1000 # Number of simulations
 
