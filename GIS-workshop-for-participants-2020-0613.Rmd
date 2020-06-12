@@ -236,7 +236,7 @@ Now, let's work on vector data. We download the shapefile which contains site lo
 
 ```{r read-shapefile}
 # download the zip file into our data folder
-download.file("https://github.com/LiYingWang/Japan_GIS_workshop_202006_LW/raw/master/data/shapefile.zip", "data/site_shapefile.zip")
+download.file("https://github.com/LiYingWang/Japan_GIS_workshop_202006_LW/raw/master/shapefile/shapefile.zip", "data/site_shapefile.zip")
 # unzip to the data folder
 unzip(zipfile = "data/site_shapefile.zip", exdir = "data")
 # delete zip file
