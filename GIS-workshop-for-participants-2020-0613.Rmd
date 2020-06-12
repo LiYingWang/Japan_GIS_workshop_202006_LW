@@ -167,6 +167,9 @@ The raster data is DEM data downloaded from https://www.gsi.go.jp/kankyochiri/gm
 ```{r get-raster-data}
 library(raster)
 
+# create data folder to store the data we are going to download
+dir.create(here::here("data"))
+
 # download the zip file into our data folder
 download.file("https://github.com/LiYingWang/Japan_GIS_workshop_202006_LW/raw/master/data/gm-jpn-el_u_1_1.zip", "data/raster-data.zip")
 # unzip to the data folder
@@ -221,7 +224,7 @@ unzip(zipfile = "data/site_shapefile.zip", exdir = "data")
 unlink("data/site_shapefile.zip")
 
 # Example of archaeological sites
-sites_location <- st_read(here::here("data","sites_example.shp"))
+sites_location <- st_read(here::here("data", "sites_example.shp"))
 
 ggplot() +
   geom_raster(data = crop_DEM_df, aes(x = x, y = y, fill = el)) +
