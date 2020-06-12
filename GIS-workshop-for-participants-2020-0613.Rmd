@@ -9,11 +9,11 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-In this workshop, we will learn how to use R to manipulate and visualize spatial data of interest to archaeologists. This rmd file is a demonstration of code and you will work on it step by step to get familiar with spatial data and basic analysis. There are three main topics covered in this workshop:
+In this workshop, you will learn how to use R to manipulate and visualize spatial data of interest to archaeologists. This rmd file is a demonstration of code and you will work on it step by step to get familiar with spatial data and basic analysis. There are three main topics covered in this workshop:
 
 -Part 1: making maps, including regional map and site map
--Part 2: learning raster data and vector data, spatial data manipulation, and visualization
--Part 3: density analysis of sites and hypothesis testing for their distributions
+-Part 2: learning basics of raster data and vector data, spatial data manipulation and visualization
+-Part 3: density analysis of sites, and hypothesis testing for their distributions
 
 Before getting started, let's install all packages we will use!
  
@@ -36,15 +36,15 @@ devtools::install_github('3wen/legendMap')
 
 -Part 1: making maps, including regional map and site map
 
-Load world data and take a look at the data form, especially the "geometry" column where it stores the coordinates we needs for making maps
+Load world data and take a look at the data form, especially the "geometry" column where it stores the coordinates we need for making maps.
 
-# Exercise: loading data and check it (2 mins)
+# Exercise: load data and check it (2 mins)
 
 ```{r load-world-map-data}
 library(rnaturalearth) # provides world map
 library(rnaturalearthdata)
 
-world <- ne_countries(scale = "medium", returnclass = "sf") # this line pulls country data 
+world <- ne_countries(scale = "medium", returnclass = "sf") # pulls country data 
 class(world) # what class it is?
 # type View(world) in your console to take a look at the data frame
 ```
@@ -62,7 +62,7 @@ ggplot(data = world) +
 
 Now, we want to plot Japan with some countries around it as our regional map. We may want to indicate the countries by adding name label on it. To do this, we need to get the center of the country for adding country labels, and then specify which countries we want to show their names on the map.
 
-# Exercise: create country labels to add on the regional map (2 mins)
+# Exercise: create country labels for the regional map (2 mins)
 
 ```{r create-text-labels}
 library(tidyverse)
@@ -86,7 +86,7 @@ library(shadowtext)
 JP_NE_Asia <-
   ggplot(data = world) +
   geom_sf() +
-  geom_shadowtext(data= world_points,
+  geom_shadowtext(data= world_points, # add texts
                   aes(x = X, y = Y,
                       label = name),
                   color='black',
@@ -104,7 +104,7 @@ JP_NE_Asia <-
 JP_NE_Asia
 ```
 
-We also want to make a map for archaeological sites we are interested in. We need to specify the coordinates of site location.
+We also want to make a map with archaeological sites we are interested in. Since we would add points for sites, we have to specify the coordinates of site location first.
 
 # Exercise: prepare the location of sites (2 mins)
 
@@ -124,28 +124,28 @@ library(ggspatial)
 library(legendMap)
 
 local_map <- ggmap(get_stamenmap(rbind(as.numeric(c(135.3, 34.3,
-                                                    136.0, 35))), zoom = 10))
+                                                    136.0, 35))), zoom = 10)) # define the range
 
 site_Japan <- 
   local_map +
-  geom_point(data = site_location,
+  geom_point(data = site_location, # add a layer of sites
              aes(x = lon,
                  y = lat),
              size = 2,
              color = "red") +
-  geom_shadowtext(data = site_location,
+  geom_shadowtext(data = site_location, # add texts 
                   aes(x = lon,
                       y = lat,
                       label = location),
-                  size = 3,
+                  size = 2,
                   position = position_nudge(y = - 0.03),
                   check.overlap = TRUE) +
-  coord_sf(xlim = c(135.3, 136),
+  coord_sf(xlim = c(135.3, 136), # define the range
            ylim = c(34.3, 35),
            expand = FALSE) +
-  scale_x_continuous(breaks = seq(135.3, 136, by = 0.2)) +
+  scale_x_continuous(breaks = seq(135.3, 136, by = 0.2)) + 
   scale_y_continuous(breaks = seq(24.3, 35, by = 0.2)) +
-  legendMap::scale_bar(
+  legendMap::scale_bar( 
     lon = 135.75,
     lat = 34.32,
     legend_size = 2,
@@ -175,7 +175,7 @@ The final step is to save our plot! Use this code right below the plot you want 
 
 # Exercise: save the map to your folder (2 mins)
 
-```{r save-map}
+```{r save-site-map}
 ggsave(here::here("Japan-site-map.jpg"),
        width = 60,
        height = 60,
@@ -184,7 +184,8 @@ ggsave(here::here("Japan-site-map.jpg"),
 ```
 
 -Part 2: learning raster data and vector data, spatial data manipulation, and visualization
-The raster data is DEM downloaded from https://www.gsi.go.jp/kankyochiri/gm_japan_e.html. We won't use the data, so we need to crop the area we want.
+
+The raster data is DEM data downloaded from https://www.gsi.go.jp/kankyochiri/gm_japan_e.html. We want to crop the area that matches the site map from this DEM data. Here, we use coordinates to create a data frame, convert it to a spatial object, and then use it to crop the raster.
 
 # Exercise: crop an area from raster data (7 mins)
 
@@ -214,24 +215,27 @@ library(sp)
 p = Polygon(xym) # convert the matrix to polygon
 ps = Polygons(list(p),1) # make lists
 sps = SpatialPolygons(list(ps)) # convert to Spatial Polygons
-crs(sps) <- crs(DEM_Japan) # make them the same coordinate system
-crop_DEM <- crop(DEM_Japan, sps) # crop the area we want from DEM
+crs(sps) <- crs(DEM_Japan) # define coordinate reference system
+crop_DEM <- crop(DEM_Japan, sps) # crop a raster to the extent of specified spatial object
 summary(crop_DEM)
 ```
 
-# Exercise: convert raster data to a data frame for plotting (5 mins)
+We can plot the raster data using ggplot function, which allows us to modify axis, legend, and labels displayed on the plot. To use ggplot, we need to convert the cropped raster to a dataframe.
+
+# Exercise: convert raster data to a dataframe for plotting (5 mins)
 
 ```{r plot-raster-data}
+# cover to a dataframe
 crop_DEM_df <- as.data.frame(crop_DEM, xy = TRUE)
 
 # plot
 ggplot() +
   geom_raster(data = crop_DEM_df , aes(x = x, y = y, fill = el)) +
   scale_fill_viridis_c(name = "Elevation") +
-  coord_quickmap()
+  coord_quickmap() # plot faster
 ```
 
-Now, let's work on vector data. We download the shapefile which contains site locations we want to explore. We are curious about the distribution of sites and how it relates to the elevation of this area. 
+Now, let's work on vector data and plot it on the raster. We import a shapefile which contains site locations we want to explore (note: its not a real data). We are curious about the distribution of archaeological sites and how they relate to the elevation of this area. 
 
 # Exercise: explore shapefile and map it on the raster layer (7 mins)
 
@@ -243,44 +247,47 @@ unzip(zipfile = "data/site_shapefile.zip", exdir = "data")
 # delete zip file
 unlink("data/site_shapefile.zip")
 
+# Example of archaeological sites
 sites_location <- st_read(here::here("data","sites_example.shp"))
 
 ggplot() +
   geom_raster(data = crop_DEM_df, aes(x = x, y = y, fill = el)) +
-  geom_sf(data = sites_location, aes(color = Period)) +
-  scale_color_manual(values=c("red", "black")) +
+  geom_sf(data = sites_location, aes(color = Period)) + # add site shapefile
+  scale_color_manual(values=c("red", "black")) + # change default color
   scale_fill_viridis_c(name = "Elevation") +
-  coord_sf()
+  coord_sf() # all layers use a common CRS
 ```
 
-We are curious about the elevation where the archaeological sites are located, and would like to compare sites from two phases: Yayoi and Kofun
+We are curious about the elevation of the locations of archaeological sites, and would like to compare sites from two phases: Yayoi and Kofun.
 
-# Exercise: extract elevation and make a boxplot to compare sites from two phases (5 mins)
+# Exercise: extract elevation and make a plot to compare sites from two phases (5 mins)
 
 ```{r elevation-boxplot-two-phases}
-# convert sf to a sptaial object
+# convert sf (simple feature) to a spatial object
 sp_sites_location <- as(sites_location, "Spatial")
 
 # extract elevation for each site
-elevation <- extract(crop_DEM, sp_sites_location, method = "simple")
+elevation <- extract(crop_DEM, sp_sites_location, 
+                     method = "simple") # use values for the cell a point falls in
 sites_location <- cbind(sites_location, elevation)
 
 sites_location %>% 
-  ggplot (aes (Period, elevation)) +
+  ggplot(aes(Period, elevation)) + 
   geom_boxplot() +
   theme_minimal()
 ```
 
 -Part 3: density analysis of sites and hypothesis testing for their distributions
 
-What is the distribution of the sites across this area? We want to see if there are any hot spots using kernal density estimation.
+We may want to know the distribution pattern of the sites across this area. We can visualize the density to check any hot spots using kernal density estimation.
 
-# Exercise: make a kernel density plot (7 mins)  
+# Exercise: make a kernel density plot (7 mins)
 
 ```{r kernel-plot-all-sites}
 library(spatstat)
 library(maptools)
 
+# get two columns, one longitude and another is latitude
 sites_location_coords <-
   sites_location %>% 
   st_coordinates() %>% 
@@ -288,10 +295,11 @@ sites_location_coords <-
 
 plot(sites_location_coords)
 
+# convert to ppp object that represent a two-dimensional point pattern
 sites_location_ppp <- ppp(x = sites_location_coords$X,
                           y = sites_location_coords$Y,
-                          range(sites_location_coords$X), # set range
-                          range(sites_location_coords$Y))
+                          range(crop_DEM_df$x), # set window, means the extent of an area
+                          range(crop_DEM_df$y))
 
 K1 <- density(sites_location_ppp) 
 
@@ -299,11 +307,13 @@ plot(K1, main=NULL, las=1)
 contour(K1, add=TRUE)
 ```
 
-Is the hot spots we observed significant? We can simulate the site locations and make hypothesis testing to determine if the distribution is clustered or dispersed. 
+Is the hot spots we observed significant? We can simulate the site locations and testing our hypothesis to determine if the distribution is random or not random.
 
 # Exercise: simulation and plot the histogram (7 mins)
 
 ```{r simulation-all-sites}
+
+# get the mean distance for our observation
 ann_p <- mean(nndist(sites_location_ppp, k=1))
 n     <- 1000 # Number of simulations
 
@@ -312,8 +322,8 @@ ann_r <- vector(length = n) # an object for storing simulated ANN values
 # simulation
 for (i in 1:n){
   rand_p   <- rpoint(sites_location_ppp$n, 
-                     win = as.owin(crop_DEM_df))  # Generate random point locations
-  ann_r[i] <- mean(nndist(rand_p, k=1))  # Tally the ANN values
+                     win = as.owin(crop_DEM_df))  # generate random point locations
+  ann_r[i] <- mean(nndist(rand_p, k=1))  # tally the ANN values
 }
 
 # plot the histogram and add our observed ANN value line
@@ -323,7 +333,7 @@ hist(ann_r, main=NULL, las=1, breaks=40,
 abline(v = ann_p, col="blue")
 ```
 
-We looked at sites all together and now we want to only explore Kofun period. We first separate the phases and then use the same method to test the Kofun sites.
+We have looked at the distribution of sites all together, but what if we want to focus on sites from a phase; for example, we want to explore Kofun period. We can filter out the phase we want and then use the same method to test the Kofun sites.
 
 # Quiz: Do the Kofun sites ramdonly distributed or non-ramdonly distribution? The pattern is clustterd or dispersed? 
 
@@ -337,8 +347,8 @@ sites_location_coords_kofun <-
 
 sites_location_ppp_kofun <- (ppp(x = sites_location_coords_kofun$X,
                                  y = sites_location_coords_kofun$Y,
-                                 range(sites_location_coords$X),
-                                 range(sites_location_coords$Y))) 
+                                 range(crop_DEM_df$x$X),
+                                 range(crop_DEM_df$x$Y))) 
 
 K2 <- density(sites_location_ppp_kofun) 
 
