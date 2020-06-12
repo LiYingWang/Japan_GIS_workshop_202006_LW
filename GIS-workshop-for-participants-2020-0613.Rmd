@@ -19,13 +19,33 @@ In this workshop, you will learn how to use R to manipulate and visualize spatia
 
 Before getting started, let's install all packages we will use!
  
-## Set up: install packages (5 mins) 
+## Set up 1: install packages 
 
 Copy and paste the code on your console and run it: 
 install.packages(c("rnaturalearth", "rnaturalearthdata", "tidyverse", "sf", "sp","shadowtext", "ggmap", "ggspatial", "raster", "spatstat", "maptools"))
 
 Copy and paste the code on your console and run it: 
 devtools::install_github('3wen/legendMap')
+
+## Set up 2: create data folder to store spatial data for this workshop
+
+```{r load-workdshop-data}
+# create data folder to store the raster data 
+dir.create(here::here("data"))
+# download the raster zip file into our data folder
+download.file("https://github.com/LiYingWang/Japan_GIS_workshop_202006_LW/raw/master/data/gm-jpn-el_u_1_1.zip", "data/raster-data.zip")
+# unzip to the data folder
+unzip(zipfile = "data/raster-data.zip", exdir = "data")
+# delete zip file
+unlink("data/raster-data.zip")
+
+# download the shapefile zip file into our data folder
+download.file("https://github.com/LiYingWang/Japan_GIS_workshop_202006_LW/raw/master/shapefile/shapefile.zip", "data/site_shapefile.zip")
+# unzip to the data folder
+unzip(zipfile = "data/site_shapefile.zip", exdir = "data")
+# delete zip file
+unlink("data/site_shapefile.zip")
+```
 
 # Making maps
 
@@ -167,15 +187,6 @@ The raster data is DEM data downloaded from https://www.gsi.go.jp/kankyochiri/gm
 ```{r get-raster-data}
 library(raster)
 
-# create data folder to store the data we are going to download
-dir.create(here::here("data"))
-
-# download the zip file into our data folder
-download.file("https://github.com/LiYingWang/Japan_GIS_workshop_202006_LW/raw/master/data/gm-jpn-el_u_1_1.zip", "data/raster-data.zip")
-# unzip to the data folder
-unzip(zipfile = "data/raster-data.zip", exdir = "data")
-# delete zip file
-unlink("data/raster-data.zip")
 # read in data from data folder
 DEM_Japan <- raster(here::here("gm-jpn-el_u_1_1", "jpn", "el.tif"))
 
@@ -216,13 +227,6 @@ Now, let's work on vector data and plot it on the raster. We import a shapefile 
 ## Exercise 5: explore shapefile and map it on the raster layer (7 mins)
 
 ```{r read-shapefile}
-# download the zip file into our data folder
-download.file("https://github.com/LiYingWang/Japan_GIS_workshop_202006_LW/raw/master/shapefile/shapefile.zip", "data/site_shapefile.zip")
-# unzip to the data folder
-unzip(zipfile = "data/site_shapefile.zip", exdir = "data")
-# delete zip file
-unlink("data/site_shapefile.zip")
-
 # Example of archaeological sites
 sites_location <- st_read(here::here("data", "sites_example.shp"))
 
@@ -254,8 +258,6 @@ sites_location %>%
 ```
 
 # Density analysis and hypothesis testing
-
--Part 3: density analysis of sites and hypothesis testing for their distributions
 
 We may want to know the distribution pattern of the sites across this area. We can visualize the density to check any hot spots using kernal density estimation.
 
@@ -290,7 +292,6 @@ Is the hot spots we observed significant? We can simulate the site locations and
 ## Exercise 8: simulation and plot the histogram (7 mins)
 
 ```{r simulation-all-sites}
-
 # get the mean distance for our observation
 ann_p <- mean(nndist(sites_location_ppp, k=1))
 n     <- 1000 # Number of simulations
@@ -316,7 +317,6 @@ We have looked at the distribution of sites all together, but what if we want to
 ## Quiz: Do the Kofun sites ramdonly distributed or non-ramdonly distributed? The pattern is clustterd or dispersed? 
 
 ```{r kernel-plot-kofun}
-
 sites_location_coords_kofun <-
   sites_location %>% 
   st_coordinates() %>% 
