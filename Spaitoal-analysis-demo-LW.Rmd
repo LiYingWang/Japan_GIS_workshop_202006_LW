@@ -304,7 +304,7 @@ hist(ann_r, main=NULL, las=1, breaks=40,
 abline(v = ann_p, col="blue")
 ```
 
-only Look at only Kofun period
+only Look at Kofun period
 
 ```{r}
 sites_location_coords_kofun <-
