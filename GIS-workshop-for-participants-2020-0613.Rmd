@@ -31,7 +31,7 @@ devtools::install_github('3wen/legendMap')
 
 ```{r load-workdshop-data}
 # create data folder to store the raster data 
-dir.create(here::here("data"))
+dir.create("data")
 # download the raster zip file into our data folder
 download.file("https://github.com/LiYingWang/Japan_GIS_workshop_202006_LW/raw/master/data/gm-jpn-el_u_1_1.zip", "data/raster-data.zip")
 # unzip to the data folder
