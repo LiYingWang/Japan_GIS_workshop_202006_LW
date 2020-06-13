@@ -12,8 +12,8 @@ install.packages(c("rnaturalearth",
                    "spatstat", 
                    "maptools"))
 
-# If you messages: "Do you want to install from sources the package which needs compilation?" 
-# Type "No" on your console
+# If you see a message: "Do you want to install from sources the package which needs compilation?" 
+# Type "No" on your console and it will continue to download
 
 # Run the code below
 devtools::install_github('3wen/legendMap')
