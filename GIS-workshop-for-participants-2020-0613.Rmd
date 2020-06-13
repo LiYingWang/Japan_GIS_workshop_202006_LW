@@ -14,17 +14,19 @@ knitr::opts_chunk$set(echo = TRUE)
 In this workshop, you will learn how to use R to manipulate and visualize spatial data of interest to archaeologists. This rmd file is a demonstration of code and you will work on it step by step to get familiar with spatial data and basic analysis. There are three main topics covered in this workshop:
 
 -Part 1: making maps, including regional map and site map
--Part 2: learning basics of raster data and vector data, spatial data manipulation and visualization
--Part 3: density analysis of sites, and hypothesis testing for their distributions
+-Part 2: spatial data manipulation and visualization
+-Part 3: spatial data analysis, including density analysis of sites, and hypothesis testing for their distributions
 
 Before getting started, let's install all packages we will use!
  
 ## Set up 1: install packages 
 
-Copy and paste the code on your console and run it: 
-install.packages(c("rnaturalearth", "rnaturalearthdata", "tidyverse", "sf", "sp","shadowtext", "ggmap", "ggspatial", "raster", "spatstat", "maptools"))
+Copy and paste the code to your console and run it: 
+install.packages(c("rnaturalearth", "rnaturalearthdata", "ggplot2", "tidyverse", "sf", "sp","shadowtext", "ggmap", "ggspatial", "raster", "spatstat", "maptools"))
 
-Copy and paste the code on your console and run it: 
+If you see a message "Do you want to install from sources the package which needs compilation?" Type "No" on your console. 
+
+Copy and paste the code to your console and run it: 
 devtools::install_github('3wen/legendMap')
 
 ## Set up 2: create data folder to store spatial data for this workshop
@@ -163,6 +165,12 @@ site_Japan <-
   theme(axis.title.x = element_blank(),
         axis.title.y = element_blank())
 
+site_Japan
+```
+
+We can save the map using ggsave function below the plot we would like to save.
+
+```{r save-map}
 # save the map to your folder 
 ggsave(here::here("Japan-site-map.jpg"),
        width = 60,
@@ -171,7 +179,7 @@ ggsave(here::here("Japan-site-map.jpg"),
        units = "mm")
 ```
 
-# Raster and vector data
+# Spatial data manipulation and visualization 
 
 The raster data is DEM data downloaded from https://www.gsi.go.jp/kankyochiri/gm_japan_e.html. We want to crop the area that matches the site map from this DEM data. Here, we use coordinates to create a data frame, convert it to a spatial object, and then use it to crop the raster.
 
@@ -199,15 +207,15 @@ ps = Polygons(list(p),1) # make lists
 sps = SpatialPolygons(list(ps)) # convert to Spatial Polygons
 crs(sps) <- crs(DEM_Japan) # define coordinate reference system
 crop_DEM <- crop(DEM_Japan, sps) # crop a raster to the extent of specified spatial object
+plot(crop_DEM)
 summary(crop_DEM)
 ```
 
 We can plot the raster data using ggplot function, which allows us to modify axis, legend, and labels displayed on the plot. To use ggplot, we need to convert the cropped raster to a dataframe.
 
 ```{r plot-raster-data}
-# cover to a dataframe
+# cover to a dataframe for ggplot
 crop_DEM_df <- as.data.frame(crop_DEM, xy = TRUE)
-
 # plot
 ggplot() +
   geom_raster(data = crop_DEM_df , aes(x = x, y = y, fill = el)) +
@@ -220,11 +228,13 @@ Now, let's work on vector data and plot it on the raster. We import a shapefile 
 ## Exercise 5: explore shapefile and map it on the raster layer (7 mins)
 
 ```{r read-shapefile}
+crop_DEM_df <- as.data.frame(crop_DEM, xy = TRUE)
 # Example of archaeological sites
 sites_location <- st_read("data/workshop_data/sites_example.shp")
 
-ggplot() +
-  geom_raster(data = crop_DEM_df, aes(x = x, y = y, fill = el)) +
+crop_DEM_df %>% 
+  ggplot() + 
+  geom_raster(aes(x = x, y = y, fill = el)) +
   geom_sf(data = sites_location, aes(color = Period)) + # add site shapefile
   scale_color_manual(values=c("red", "black")) + # change default color
   scale_fill_viridis_c(name = "Elevation") +
@@ -259,7 +269,6 @@ We may want to know the distribution pattern of the sites across this area. We c
 ```{r kernel-plot-all-sites}
 library(spatstat)
 library(maptools)
-
 crop_DEM_df <- as.data.frame(crop_DEM, xy = TRUE)
 
 # get two columns, one longitude and another is latitude
