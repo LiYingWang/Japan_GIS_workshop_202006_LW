@@ -17,14 +17,14 @@ In this workshop, you will learn how to use R to manipulate and visualize spatia
 -Part 2: spatial data manipulation and visualization
 -Part 3: spatial data analysis, including density analysis of sites, and hypothesis testing for their distributions
 
-Before getting started, let's install all packages we will use!
+Before getting started, make sure you have all packages we will use! If not, run the code below:
  
 ## Set up 1: install packages 
 
 Copy and paste the code to your console and run it: 
 install.packages(c("rnaturalearth", "rnaturalearthdata", "ggplot2", "tidyverse", "sf", "sp","shadowtext", "ggmap", "ggspatial", "raster", "spatstat", "maptools"))
 
-If you see a message "Do you want to install from sources the package which needs compilation?" Type "No" on your console. 
+If you see a message "Do you want to install from sources the package which needs compilation?" Type "No" on your console, press Enter, and it will continue to download.
 
 Copy and paste the code to your console and run it: 
 devtools::install_github('3wen/legendMap')
