@@ -2,11 +2,19 @@
 title: "Making maps and analysing spatial data: An introduction to using R for archaeologists"
 author: "Liying Wang"
 date: "6/14/2020"
-output: html_document
+output:
+  pdf_document:
+       latex_engine: xelatex 
+  html_document: default
+  word_document: default
+documentclass: bxjsarticle
+classoption: xelatex,ja=standard
+geometry: no
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
+Sys.setlocale("LC_ALL","English") #Windowsにおけるエンコード問題解決用
 ```
 
 # Introduction
