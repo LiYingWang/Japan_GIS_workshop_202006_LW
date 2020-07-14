@@ -1,0 +1,863 @@
+% Options for packages loaded elsewhere
+\PassOptionsToPackage{unicode}{hyperref}
+\PassOptionsToPackage{hyphens}{url}
+%
+\documentclass[
+  xelatex,ja=standard]{bxjsarticle}
+\usepackage{lmodern}
+\usepackage{amssymb,amsmath}
+\usepackage{ifxetex,ifluatex}
+\ifnum 0\ifxetex 1\fi\ifluatex 1\fi=0 % if pdftex
+  \usepackage[T1]{fontenc}
+  \usepackage[utf8]{inputenc}
+  \usepackage{textcomp} % provide euro and other symbols
+\else % if luatex or xetex
+  \usepackage{unicode-math}
+  \defaultfontfeatures{Scale=MatchLowercase}
+  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
+\fi
+% Use upquote if available, for straight quotes in verbatim environments
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\IfFileExists{microtype.sty}{% use microtype if available
+  \usepackage[]{microtype}
+  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
+}{}
+\makeatletter
+\@ifundefined{KOMAClassName}{% if non-KOMA class
+  \IfFileExists{parskip.sty}{%
+    \usepackage{parskip}
+  }{% else
+    \setlength{\parindent}{0pt}
+    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
+}{% if KOMA class
+  \KOMAoptions{parskip=half}}
+\makeatother
+\usepackage{xcolor}
+\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
+\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
+\hypersetup{
+  pdftitle={Making maps and analysing spatial data: An introduction to using R for archaeologists},
+  pdfauthor={Liying Wang},
+  hidelinks,
+  pdfcreator={LaTeX via pandoc}}
+\urlstyle{same} % disable monospaced font for URLs
+\usepackage[no]{geometry}
+\usepackage{color}
+\usepackage{fancyvrb}
+\newcommand{\VerbBar}{|}
+\newcommand{\VERB}{\Verb[commandchars=\\\{\}]}
+\DefineVerbatimEnvironment{Highlighting}{Verbatim}{commandchars=\\\{\}}
+% Add ',fontsize=\small' for more characters per line
+\usepackage{framed}
+\definecolor{shadecolor}{RGB}{248,248,248}
+\newenvironment{Shaded}{\begin{snugshade}}{\end{snugshade}}
+\newcommand{\AlertTok}[1]{\textcolor[rgb]{0.94,0.16,0.16}{#1}}
+\newcommand{\AnnotationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\AttributeTok}[1]{\textcolor[rgb]{0.77,0.63,0.00}{#1}}
+\newcommand{\BaseNTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\BuiltInTok}[1]{#1}
+\newcommand{\CharTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\CommentTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\CommentVarTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ConstantTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ControlFlowTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\DataTypeTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{#1}}
+\newcommand{\DecValTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\DocumentationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\ErrorTok}[1]{\textcolor[rgb]{0.64,0.00,0.00}{\textbf{#1}}}
+\newcommand{\ExtensionTok}[1]{#1}
+\newcommand{\FloatTok}[1]{\textcolor[rgb]{0.00,0.00,0.81}{#1}}
+\newcommand{\FunctionTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\ImportTok}[1]{#1}
+\newcommand{\InformationTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\newcommand{\KeywordTok}[1]{\textcolor[rgb]{0.13,0.29,0.53}{\textbf{#1}}}
+\newcommand{\NormalTok}[1]{#1}
+\newcommand{\OperatorTok}[1]{\textcolor[rgb]{0.81,0.36,0.00}{\textbf{#1}}}
+\newcommand{\OtherTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{#1}}
+\newcommand{\PreprocessorTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textit{#1}}}
+\newcommand{\RegionMarkerTok}[1]{#1}
+\newcommand{\SpecialCharTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\SpecialStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\StringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\VariableTok}[1]{\textcolor[rgb]{0.00,0.00,0.00}{#1}}
+\newcommand{\VerbatimStringTok}[1]{\textcolor[rgb]{0.31,0.60,0.02}{#1}}
+\newcommand{\WarningTok}[1]{\textcolor[rgb]{0.56,0.35,0.01}{\textbf{\textit{#1}}}}
+\usepackage{graphicx,grffile}
+\makeatletter
+\def\maxwidth{\ifdim\Gin@nat@width>\linewidth\linewidth\else\Gin@nat@width\fi}
+\def\maxheight{\ifdim\Gin@nat@height>\textheight\textheight\else\Gin@nat@height\fi}
+\makeatother
+% Scale images if necessary, so that they will not overflow the page
+% margins by default, and it is still possible to overwrite the defaults
+% using explicit options in \includegraphics[width, height, ...]{}
+\setkeys{Gin}{width=\maxwidth,height=\maxheight,keepaspectratio}
+% Set default figure placement to htbp
+\makeatletter
+\def\fps@figure{htbp}
+\makeatother
+\setlength{\emergencystretch}{3em} % prevent overfull lines
+\providecommand{\tightlist}{%
+  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
+\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
+
+\title{Making maps and analysing spatial data: An introduction to using R for
+archaeologists}
+\author{Liying Wang}
+\date{6/14/2020}
+
+\begin{document}
+\maketitle
+
+\hypertarget{introduction}{%
+\section{Introduction}\label{introduction}}
+
+In this workshop, you will learn how to use R to manipulate and
+visualize spatial data of interest to archaeologists. This rmd file is a
+demonstration of code and you will work on it step by step to get
+familiar with spatial data and basic analysis. There are three main
+topics covered in this workshop:
+
+-Part 1: making maps, including regional map and site map -Part 2:
+spatial data manipulation and visualization -Part 3: spatial data
+analysis, including density analysis of sites, and hypothesis testing
+for their distributions
+
+Before getting started, make sure you have all packages we will use! If
+not, run the code below:
+
+\hypertarget{set-up-1-install-packages}{%
+\subsection{Set up 1: install
+packages}\label{set-up-1-install-packages}}
+
+Copy and paste the code to your console and run it:
+install.packages(c(``rnaturalearth'', ``rnaturalearthdata'',
+``ggplot2'', ``tidyverse'', ``sf'', ``sp'',``shadowtext'', ``ggmap'',
+``ggspatial'', ``raster'', ``spatstat'', ``maptools''))
+
+If you see a message ``Do you want to install from sources the package
+which needs compilation?'' Type ``No'' on your console, press Enter, and
+it will continue to download.
+
+Copy and paste the code to your console and run it:
+devtools::install\_github(`3wen/legendMap')
+
+\hypertarget{set-up-2-create-data-folder-to-store-spatial-data-for-this-workshop}{%
+\subsection{Set up 2: create data folder to store spatial data for this
+workshop}\label{set-up-2-create-data-folder-to-store-spatial-data-for-this-workshop}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# create data folder to store the raster data }
+\KeywordTok{dir.create}\NormalTok{(}\StringTok{"data"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning in dir.create("data"): 'data' already exists
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# download the raster zip file into our data folder}
+\KeywordTok{download.file}\NormalTok{(}\StringTok{"https://github.com/LiYingWang/Japan_GIS_workshop_202006_LW/raw/master/workshop_data.zip"}\NormalTok{, }\StringTok{"data/raster-shapefile.zip"}\NormalTok{)}
+\CommentTok{# unzip to the data folder}
+\KeywordTok{unzip}\NormalTok{(}\DataTypeTok{zipfile =} \StringTok{"data/raster-shapefile.zip"}\NormalTok{, }\DataTypeTok{exdir =} \StringTok{"data"}\NormalTok{)}
+\CommentTok{# delete zip file}
+\KeywordTok{unlink}\NormalTok{(}\StringTok{"data/raster-shapefile.zip"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{making-maps}{%
+\section{Making maps}\label{making-maps}}
+
+Load world data and take a look at the data form, especially the
+``geometry'' column where it stores the coordinates we need for making
+maps.
+
+\hypertarget{exercise-1-load-data-and-plot-the-world-map-5-mins}{%
+\subsection{Exercise 1: load data and plot the world map (5
+mins)}\label{exercise-1-load-data-and-plot-the-world-map-5-mins}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(rnaturalearth) }\CommentTok{# provides world map}
+\KeywordTok{library}\NormalTok{(rnaturalearthdata)}
+
+\NormalTok{world <-}\StringTok{ }\KeywordTok{ne_countries}\NormalTok{(}\DataTypeTok{scale =} \StringTok{"medium"}\NormalTok{, }\DataTypeTok{returnclass =} \StringTok{"sf"}\NormalTok{) }\CommentTok{# pulls country data }
+\KeywordTok{class}\NormalTok{(world) }\CommentTok{# what class it is?}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## [1] "sf"         "data.frame"
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# type View(world) in your console to take a look at the data frame}
+
+\KeywordTok{library}\NormalTok{(ggplot2)}
+
+\CommentTok{# plot basic world map }
+\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ world) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_sf}\NormalTok{() }\OperatorTok{+}\StringTok{ }\CommentTok{# adds a geometry stored in world}
+\StringTok{  }\KeywordTok{theme_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{GIS-workshop-for-participants-2020-0613_files/figure-latex/load-world-map-data-1.pdf}
+
+Now, we want to plot Japan with some countries around it as our regional
+map. We may want to indicate the countries by adding name label on it.
+To do this, we need to get the center of the country for adding country
+labels, and then specify which countries we want to show their names on
+the map.
+
+\hypertarget{exercise-2-make-a-regional-map-7-mins}{%
+\subsection{Exercise 2: make a regional map (7
+mins)}\label{exercise-2-make-a-regional-map-7-mins}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(tidyverse)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## -- Attaching packages ------------------------- tidyverse 1.3.0 --
+\end{verbatim}
+
+\begin{verbatim}
+## v tibble  3.0.1     v dplyr   1.0.0
+## v tidyr   1.1.0     v stringr 1.4.0
+## v readr   1.3.1     v forcats 0.5.0
+## v purrr   0.3.4
+\end{verbatim}
+
+\begin{verbatim}
+## -- Conflicts ---------------------------- tidyverse_conflicts() --
+## x dplyr::filter() masks stats::filter()
+## x dplyr::lag()    masks stats::lag()
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(sf)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Linking to GEOS 3.7.2, GDAL 2.4.2, PROJ 5.2.0
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{country_centre_coords <-}
+\StringTok{  }\KeywordTok{as_tibble}\NormalTok{(}\KeywordTok{st_coordinates}\NormalTok{(}\KeywordTok{st_centroid}\NormalTok{(world}\OperatorTok{$}\NormalTok{geometry))) }\CommentTok{# for the text labels}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Warning in st_centroid.sfc(world$geometry): st_centroid does not give correct
+## centroids for longitude/latitude data
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{world_points <-}
+\StringTok{  }\NormalTok{world }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{bind_cols}\NormalTok{(country_centre_coords) }\OperatorTok{%>%}
+\StringTok{  }\KeywordTok{filter}\NormalTok{(name }\OperatorTok{%in%}\StringTok{ }\KeywordTok{c}\NormalTok{(}\StringTok{"Japan"}\NormalTok{, }\StringTok{"China"}\NormalTok{, }\StringTok{"Korea"}\NormalTok{, }\StringTok{"Taiwan"}\NormalTok{, }\StringTok{"Russia"}\NormalTok{,}
+                     \StringTok{"Philippines"}\NormalTok{, }\StringTok{"Vietnam"}\NormalTok{, }\StringTok{"Mongolia"}\NormalTok{))}
+
+\KeywordTok{library}\NormalTok{(shadowtext)}
+
+\CommentTok{# plot map}
+\NormalTok{JP_NE_Asia <-}
+\StringTok{  }\KeywordTok{ggplot}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ world) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_sf}\NormalTok{() }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_shadowtext}\NormalTok{(}\DataTypeTok{data=}\NormalTok{ world_points, }\CommentTok{# add texts}
+                  \KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ X, }\DataTypeTok{y =}\NormalTok{ Y,}
+                      \DataTypeTok{label =}\NormalTok{ name),}
+                  \DataTypeTok{color=}\StringTok{'black'}\NormalTok{,}
+                  \DataTypeTok{bg.colour=}\StringTok{'white'}\NormalTok{,}
+                  \DataTypeTok{size =} \DecValTok{3}\NormalTok{,}
+                  \DataTypeTok{position =} \KeywordTok{position_nudge}\NormalTok{(}\DataTypeTok{y =} \DecValTok{0}\NormalTok{, }\DataTypeTok{x =} \DecValTok{3}\NormalTok{)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{coord_sf}\NormalTok{(}\DataTypeTok{xlim =} \KeywordTok{c}\NormalTok{(}\DecValTok{95}\NormalTok{, }\DecValTok{175}\NormalTok{), }\CommentTok{# zoom in the area of interest}
+           \DataTypeTok{ylim =} \KeywordTok{c}\NormalTok{(}\DecValTok{8}\NormalTok{, }\DecValTok{70}\NormalTok{), }
+           \DataTypeTok{expand =} \OtherTok{FALSE}\NormalTok{) }\OperatorTok{+}\StringTok{ }\CommentTok{# match the limits we provide}
+\StringTok{  }\KeywordTok{scale_x_continuous}\NormalTok{(}\DataTypeTok{breaks =} \KeywordTok{seq}\NormalTok{(}\DecValTok{100}\NormalTok{, }\DecValTok{160}\NormalTok{, }\DataTypeTok{by =} \DecValTok{20}\NormalTok{)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{scale_y_continuous}\NormalTok{(}\DataTypeTok{breaks =} \KeywordTok{seq}\NormalTok{(}\DecValTok{20}\NormalTok{, }\DecValTok{65}\NormalTok{, }\DataTypeTok{by =} \DecValTok{20}\NormalTok{)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{axis.title.x =} \KeywordTok{element_blank}\NormalTok{(),}
+        \DataTypeTok{axis.title.y =} \KeywordTok{element_blank}\NormalTok{())}
+
+\NormalTok{JP_NE_Asia}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{GIS-workshop-for-participants-2020-0613_files/figure-latex/create-text-labels-1.pdf}
+
+We also want to make a map with archaeological sites we are interested
+in. Since we would add points for sites, we have to specify the
+coordinates of site location first.
+
+\hypertarget{exercise-3-make-site-map-7-mins}{%
+\subsection{Exercise 3: make site map (7
+mins)}\label{exercise-3-make-site-map-7-mins}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# add site location}
+\NormalTok{site_location <-}
+\StringTok{  }\KeywordTok{data.frame}\NormalTok{(}\DataTypeTok{location =} \KeywordTok{c}\NormalTok{(}\StringTok{"Daisen Kofun"}\NormalTok{, }\StringTok{"Todai-ji temple"}\NormalTok{),}
+             \DataTypeTok{lon =} \KeywordTok{c}\NormalTok{(}\FloatTok{135.487953}\NormalTok{, }\FloatTok{135.839891}\NormalTok{),}
+             \DataTypeTok{lat =} \KeywordTok{c}\NormalTok{(}\FloatTok{34.564503}\NormalTok{, }\FloatTok{34.688862}\NormalTok{))}
+
+\KeywordTok{library}\NormalTok{(ggmap)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Google's Terms of Service: https://cloud.google.com/maps-platform/terms/.
+\end{verbatim}
+
+\begin{verbatim}
+## Please cite ggmap if you use it! See citation("ggmap") for details.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(ggspatial)}
+\KeywordTok{library}\NormalTok{(legendMap)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Loading required package: maps
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Attaching package: 'maps'
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:purrr':
+## 
+##     map
+\end{verbatim}
+
+\begin{verbatim}
+## Loading required package: maptools
+\end{verbatim}
+
+\begin{verbatim}
+## Loading required package: sp
+\end{verbatim}
+
+\begin{verbatim}
+## Checking rgeos availability: TRUE
+\end{verbatim}
+
+\begin{verbatim}
+## Loading required package: grid
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{local_map <-}\StringTok{ }\KeywordTok{ggmap}\NormalTok{(}\KeywordTok{get_stamenmap}\NormalTok{(}\KeywordTok{rbind}\NormalTok{(}\KeywordTok{as.numeric}\NormalTok{(}\KeywordTok{c}\NormalTok{(}\FloatTok{135.3}\NormalTok{, }\FloatTok{34.3}\NormalTok{,}
+                                                    \FloatTok{136.0}\NormalTok{, }\DecValTok{35}\NormalTok{))), }\DataTypeTok{zoom =} \DecValTok{10}\NormalTok{)) }\CommentTok{# define the range}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Source : http://tile.stamen.com/terrain/10/896/405.png
+\end{verbatim}
+
+\begin{verbatim}
+## Source : http://tile.stamen.com/terrain/10/897/405.png
+\end{verbatim}
+
+\begin{verbatim}
+## Source : http://tile.stamen.com/terrain/10/898/405.png
+\end{verbatim}
+
+\begin{verbatim}
+## Source : http://tile.stamen.com/terrain/10/896/406.png
+\end{verbatim}
+
+\begin{verbatim}
+## Source : http://tile.stamen.com/terrain/10/897/406.png
+\end{verbatim}
+
+\begin{verbatim}
+## Source : http://tile.stamen.com/terrain/10/898/406.png
+\end{verbatim}
+
+\begin{verbatim}
+## Source : http://tile.stamen.com/terrain/10/896/407.png
+\end{verbatim}
+
+\begin{verbatim}
+## Source : http://tile.stamen.com/terrain/10/897/407.png
+\end{verbatim}
+
+\begin{verbatim}
+## Source : http://tile.stamen.com/terrain/10/898/407.png
+\end{verbatim}
+
+\begin{verbatim}
+## Source : http://tile.stamen.com/terrain/10/896/408.png
+\end{verbatim}
+
+\begin{verbatim}
+## Source : http://tile.stamen.com/terrain/10/897/408.png
+\end{verbatim}
+
+\begin{verbatim}
+## Source : http://tile.stamen.com/terrain/10/898/408.png
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{site_Japan <-}\StringTok{ }
+\StringTok{  }\NormalTok{local_map }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_point}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ site_location, }\CommentTok{# add a layer of sites}
+             \KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ lon,}
+                 \DataTypeTok{y =}\NormalTok{ lat),}
+             \DataTypeTok{size =} \DecValTok{2}\NormalTok{,}
+             \DataTypeTok{color =} \StringTok{"red"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_shadowtext}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ site_location, }\CommentTok{# add texts }
+                  \KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ lon,}
+                      \DataTypeTok{y =}\NormalTok{ lat,}
+                      \DataTypeTok{label =}\NormalTok{ location),}
+                  \DataTypeTok{size =} \DecValTok{2}\NormalTok{,}
+                  \DataTypeTok{position =} \KeywordTok{position_nudge}\NormalTok{(}\DataTypeTok{y =} \OperatorTok{-}\StringTok{ }\FloatTok{0.03}\NormalTok{),}
+                  \DataTypeTok{check.overlap =} \OtherTok{TRUE}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{coord_sf}\NormalTok{(}\DataTypeTok{xlim =} \KeywordTok{c}\NormalTok{(}\FloatTok{135.3}\NormalTok{, }\DecValTok{136}\NormalTok{), }\CommentTok{# define the range}
+           \DataTypeTok{ylim =} \KeywordTok{c}\NormalTok{(}\FloatTok{34.3}\NormalTok{, }\DecValTok{35}\NormalTok{),}
+           \DataTypeTok{expand =} \OtherTok{FALSE}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{scale_x_continuous}\NormalTok{(}\DataTypeTok{breaks =} \KeywordTok{seq}\NormalTok{(}\FloatTok{135.3}\NormalTok{, }\DecValTok{136}\NormalTok{, }\DataTypeTok{by =} \FloatTok{0.2}\NormalTok{)) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{scale_y_continuous}\NormalTok{(}\DataTypeTok{breaks =} \KeywordTok{seq}\NormalTok{(}\FloatTok{24.3}\NormalTok{, }\DecValTok{35}\NormalTok{, }\DataTypeTok{by =} \FloatTok{0.2}\NormalTok{)) }\OperatorTok{+}
+\StringTok{  }\NormalTok{legendMap}\OperatorTok{::}\KeywordTok{scale_bar}\NormalTok{( }
+    \DataTypeTok{lon =} \FloatTok{135.75}\NormalTok{,}
+    \DataTypeTok{lat =} \FloatTok{34.32}\NormalTok{,}
+    \DataTypeTok{legend_size =} \DecValTok{2}\NormalTok{,}
+    \CommentTok{# distance of one section of scale bar, in km}
+    \DataTypeTok{distance_lon =} \DecValTok{10}\NormalTok{,}
+    \CommentTok{# height of the scale bar, in km}
+    \DataTypeTok{distance_lat =} \DecValTok{1}\NormalTok{,}
+    \CommentTok{# distance between scale bar and units, in km}
+    \DataTypeTok{distance_legend =} \DecValTok{3}\NormalTok{,}
+    \CommentTok{# units of scale bar}
+    \DataTypeTok{dist_unit =} \StringTok{"km"}\NormalTok{,}
+    \CommentTok{# add the north arrow}
+    \DataTypeTok{orientation =} \OtherTok{TRUE}\NormalTok{,}
+    \CommentTok{# length of N arrow, in km}
+    \DataTypeTok{arrow_length =} \DecValTok{5}\NormalTok{,}
+    \CommentTok{# distance between scale bar & base of N arrow, in km}
+    \DataTypeTok{arrow_distance =} \DecValTok{3}\NormalTok{,}
+    \CommentTok{# size of letter 'N' on N arrow, in km}
+    \DataTypeTok{arrow_north_size =} \DecValTok{3}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme}\NormalTok{(}\DataTypeTok{axis.title.x =} \KeywordTok{element_blank}\NormalTok{(),}
+        \DataTypeTok{axis.title.y =} \KeywordTok{element_blank}\NormalTok{())}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Coordinate system already present. Adding new coordinate system, which will replace the existing one.
+\end{verbatim}
+
+\begin{verbatim}
+## Scale for 'x' is already present. Adding another scale for 'x', which will
+## replace the existing scale.
+\end{verbatim}
+
+\begin{verbatim}
+## Scale for 'y' is already present. Adding another scale for 'y', which will
+## replace the existing scale.
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{site_Japan}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{GIS-workshop-for-participants-2020-0613_files/figure-latex/site-location-1.pdf}
+
+We can save the map using ggsave function below the plot we would like
+to save.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# save the map to your folder }
+\KeywordTok{ggsave}\NormalTok{(here}\OperatorTok{::}\KeywordTok{here}\NormalTok{(}\StringTok{"Japan-site-map.jpg"}\NormalTok{),}
+       \DataTypeTok{width =} \DecValTok{60}\NormalTok{,}
+       \DataTypeTok{height =} \DecValTok{60}\NormalTok{,}
+       \DataTypeTok{dpi =} \DecValTok{300}\NormalTok{,}
+       \DataTypeTok{units =} \StringTok{"mm"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\hypertarget{spatial-data-manipulation-and-visualization}{%
+\section{Spatial data manipulation and
+visualization}\label{spatial-data-manipulation-and-visualization}}
+
+The raster data is DEM data downloaded from
+\url{https://www.gsi.go.jp/kankyochiri/gm_japan_e.html}. We want to crop
+the area that matches the site map from this DEM data. Here, we use
+coordinates to create a data frame, convert it to a spatial object, and
+then use it to crop the raster.
+
+\hypertarget{exercise-4-crop-an-area-from-raster-data-7-mins}{%
+\subsection{Exercise 4: crop an area from raster data (7
+mins)}\label{exercise-4-crop-an-area-from-raster-data-7-mins}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(raster)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## 
+## Attaching package: 'raster'
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:dplyr':
+## 
+##     select
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:tidyr':
+## 
+##     extract
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# read in data from data folder}
+\NormalTok{DEM_Japan <-}\StringTok{ }\KeywordTok{raster}\NormalTok{(}\StringTok{"data/workshop_data/jpn/el.tif"}\NormalTok{)}
+
+\CommentTok{# assign coordinate reference system}
+\KeywordTok{crs}\NormalTok{(DEM_Japan) <-}\StringTok{ "+proj=lcc +lat_1=41.03333333333333 +lat_2=40.66666666666666 +lat_0=40.16666666666666 +lon_0=-74 +x_0=300000 +y_0=0 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=us-ft +no_defs"}
+
+\KeywordTok{plot}\NormalTok{(DEM_Japan) }\CommentTok{# take a look at raster data}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{GIS-workshop-for-participants-2020-0613_files/figure-latex/get-raster-data-1.pdf}
+\includegraphics{GIS-workshop-for-participants-2020-0613_files/figure-latex/get-raster-data-2.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# define the area that we want to crop from the DEM}
+\NormalTok{x_coord <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\FloatTok{135.3}\NormalTok{, }\FloatTok{135.3}\NormalTok{, }\DecValTok{136}\NormalTok{, }\DecValTok{136}\NormalTok{, }\FloatTok{135.3}\NormalTok{)}
+\NormalTok{y_coord <-}\StringTok{ }\KeywordTok{c}\NormalTok{(}\FloatTok{34.3}\NormalTok{, }\DecValTok{35}\NormalTok{, }\DecValTok{35}\NormalTok{, }\FloatTok{34.3}\NormalTok{, }\FloatTok{34.3}\NormalTok{)}
+\NormalTok{xym <-}\StringTok{ }\KeywordTok{cbind}\NormalTok{(x_coord, y_coord)}
+
+\KeywordTok{library}\NormalTok{(sp)}
+\NormalTok{p =}\StringTok{ }\KeywordTok{Polygon}\NormalTok{(xym) }\CommentTok{# convert the matrix to polygon}
+\NormalTok{ps =}\StringTok{ }\KeywordTok{Polygons}\NormalTok{(}\KeywordTok{list}\NormalTok{(p),}\DecValTok{1}\NormalTok{) }\CommentTok{# make lists}
+\NormalTok{sps =}\StringTok{ }\KeywordTok{SpatialPolygons}\NormalTok{(}\KeywordTok{list}\NormalTok{(ps)) }\CommentTok{# convert to Spatial Polygons}
+\KeywordTok{crs}\NormalTok{(sps) <-}\StringTok{ }\KeywordTok{crs}\NormalTok{(DEM_Japan) }\CommentTok{# define coordinate reference system}
+\NormalTok{crop_DEM <-}\StringTok{ }\KeywordTok{crop}\NormalTok{(DEM_Japan, sps) }\CommentTok{# crop a raster to the extent of specified spatial object}
+\KeywordTok{plot}\NormalTok{(crop_DEM)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{GIS-workshop-for-participants-2020-0613_files/figure-latex/get-raster-data-3.pdf}
+\includegraphics{GIS-workshop-for-participants-2020-0613_files/figure-latex/get-raster-data-4.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{summary}\NormalTok{(crop_DEM)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+##          el
+## Min.      0
+## 1st Qu.   4
+## Median   14
+## 3rd Qu.  33
+## Max.    105
+## NA's      0
+\end{verbatim}
+
+We can plot the raster data using ggplot function, which allows us to
+modify axis, legend, and labels displayed on the plot. To use ggplot, we
+need to convert the cropped raster to a dataframe.
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# cover to a dataframe for ggplot}
+\NormalTok{crop_DEM_df <-}\StringTok{ }\KeywordTok{as.data.frame}\NormalTok{(crop_DEM, }\DataTypeTok{xy =} \OtherTok{TRUE}\NormalTok{)}
+\CommentTok{# plot}
+\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_raster}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ crop_DEM_df , }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ x, }\DataTypeTok{y =}\NormalTok{ y, }\DataTypeTok{fill =}\NormalTok{ el)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{scale_fill_viridis_c}\NormalTok{(}\DataTypeTok{name =} \StringTok{"Elevation"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{coord_quickmap}\NormalTok{() }\CommentTok{# plot faster}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{GIS-workshop-for-participants-2020-0613_files/figure-latex/plot-raster-data-1.pdf}
+
+Now, let's work on vector data and plot it on the raster. We import a
+shapefile which contains site locations we want to explore (note: its
+not a real data). We are curious about the distribution of
+archaeological sites and how they relate to the elevation of this area.
+
+\hypertarget{exercise-5-explore-shapefile-and-map-it-on-the-raster-layer-7-mins}{%
+\subsection{Exercise 5: explore shapefile and map it on the raster layer
+(7
+mins)}\label{exercise-5-explore-shapefile-and-map-it-on-the-raster-layer-7-mins}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{crop_DEM_df <-}\StringTok{ }\KeywordTok{as.data.frame}\NormalTok{(crop_DEM, }\DataTypeTok{xy =} \OtherTok{TRUE}\NormalTok{)}
+\CommentTok{# Example of archaeological sites}
+\NormalTok{sites_location <-}\StringTok{ }\KeywordTok{st_read}\NormalTok{(}\StringTok{"data/workshop_data/sites_example.shp"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Reading layer `sites_example' from data source `/Users/EmilyWang/Desktop/School document/Workshops/Japan_GIS_workshop_202006_LW/data/workshop_data/sites_example.shp' using driver `ESRI Shapefile'
+## Simple feature collection with 20 features and 2 fields
+## geometry type:  POINT
+## dimension:      XY
+## bbox:           xmin: 135.412 ymin: 34.349 xmax: 135.951 ymax: 34.923
+## CRS:            NA
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{crop_DEM_df }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{ggplot}\NormalTok{() }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_raster}\NormalTok{(}\KeywordTok{aes}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ x, }\DataTypeTok{y =}\NormalTok{ y, }\DataTypeTok{fill =}\NormalTok{ el)) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{geom_sf}\NormalTok{(}\DataTypeTok{data =}\NormalTok{ sites_location, }\KeywordTok{aes}\NormalTok{(}\DataTypeTok{color =}\NormalTok{ Period)) }\OperatorTok{+}\StringTok{ }\CommentTok{# add site shapefile}
+\StringTok{  }\KeywordTok{scale_color_manual}\NormalTok{(}\DataTypeTok{values=}\KeywordTok{c}\NormalTok{(}\StringTok{"red"}\NormalTok{, }\StringTok{"black"}\NormalTok{)) }\OperatorTok{+}\StringTok{ }\CommentTok{# change default color}
+\StringTok{  }\KeywordTok{scale_fill_viridis_c}\NormalTok{(}\DataTypeTok{name =} \StringTok{"Elevation"}\NormalTok{) }\OperatorTok{+}
+\StringTok{  }\KeywordTok{coord_sf}\NormalTok{() }\CommentTok{# all layers use a common CRS}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{GIS-workshop-for-participants-2020-0613_files/figure-latex/read-shapefile-1.pdf}
+
+We are curious about the elevation of the locations of archaeological
+sites, and would like to compare sites from two phases: Yayoi and Kofun.
+
+\hypertarget{exercise-6-extract-elevation-and-make-a-plot-to-compare-sites-from-two-phases-5-mins}{%
+\subsection{Exercise 6: extract elevation and make a plot to compare
+sites from two phases (5
+mins)}\label{exercise-6-extract-elevation-and-make-a-plot-to-compare-sites-from-two-phases-5-mins}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# convert sf (simple feature) to a spatial object}
+\NormalTok{sp_sites_location <-}\StringTok{ }\KeywordTok{as}\NormalTok{(sites_location, }\StringTok{"Spatial"}\NormalTok{)}
+
+\CommentTok{# extract elevation for each site}
+\NormalTok{elevation <-}\StringTok{ }\KeywordTok{extract}\NormalTok{(crop_DEM, sp_sites_location, }
+                     \DataTypeTok{method =} \StringTok{"simple"}\NormalTok{) }\CommentTok{# use values for the cell a point falls in}
+\NormalTok{sites_location <-}\StringTok{ }\KeywordTok{cbind}\NormalTok{(sites_location, elevation)}
+
+\NormalTok{sites_location }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{ggplot}\NormalTok{(}\KeywordTok{aes}\NormalTok{(Period, elevation)) }\OperatorTok{+}\StringTok{ }
+\StringTok{  }\KeywordTok{geom_boxplot}\NormalTok{() }\OperatorTok{+}
+\StringTok{  }\KeywordTok{theme_minimal}\NormalTok{()}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{GIS-workshop-for-participants-2020-0613_files/figure-latex/elevation-boxplot-two-phases-1.pdf}
+
+\hypertarget{density-analysis-and-hypothesis-testing}{%
+\section{Density analysis and hypothesis
+testing}\label{density-analysis-and-hypothesis-testing}}
+
+We may want to know the distribution pattern of the sites across this
+area. We can visualize the density to check any hot spots using kernal
+density estimation.
+
+\hypertarget{exercise-7-make-a-kernel-density-plot-7-mins}{%
+\subsection{Exercise 7: make a kernel density plot (7
+mins)}\label{exercise-7-make-a-kernel-density-plot-7-mins}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(spatstat)}
+\end{Highlighting}
+\end{Shaded}
+
+\begin{verbatim}
+## Loading required package: spatstat.data
+\end{verbatim}
+
+\begin{verbatim}
+## Loading required package: nlme
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Attaching package: 'nlme'
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:raster':
+## 
+##     getData
+\end{verbatim}
+
+\begin{verbatim}
+## The following object is masked from 'package:dplyr':
+## 
+##     collapse
+\end{verbatim}
+
+\begin{verbatim}
+## Loading required package: rpart
+\end{verbatim}
+
+\begin{verbatim}
+## Registered S3 method overwritten by 'spatstat':
+##   method     from
+##   print.boxx cli
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## spatstat 1.64-1       (nickname: 'Help you I can, yes!') 
+## For an introduction to spatstat, type 'beginner'
+\end{verbatim}
+
+\begin{verbatim}
+## 
+## Attaching package: 'spatstat'
+\end{verbatim}
+
+\begin{verbatim}
+## The following objects are masked from 'package:raster':
+## 
+##     area, rotate, shift
+\end{verbatim}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\KeywordTok{library}\NormalTok{(maptools)}
+\NormalTok{crop_DEM_df <-}\StringTok{ }\KeywordTok{as.data.frame}\NormalTok{(crop_DEM, }\DataTypeTok{xy =} \OtherTok{TRUE}\NormalTok{)}
+
+\CommentTok{# get two columns, one longitude and another is latitude}
+\NormalTok{sites_location_coords <-}
+\StringTok{  }\NormalTok{sites_location }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{st_coordinates}\NormalTok{() }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\NormalTok{as.data.frame }
+
+\CommentTok{# convert to ppp object that represent a two-dimensional point pattern}
+\NormalTok{sites_location_ppp <-}\StringTok{ }\KeywordTok{ppp}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ sites_location_coords}\OperatorTok{$}\NormalTok{X,}
+                          \DataTypeTok{y =}\NormalTok{ sites_location_coords}\OperatorTok{$}\NormalTok{Y,}
+                          \KeywordTok{range}\NormalTok{(crop_DEM_df}\OperatorTok{$}\NormalTok{x), }\CommentTok{# set window, means the extent of an area}
+                          \KeywordTok{range}\NormalTok{(crop_DEM_df}\OperatorTok{$}\NormalTok{y))}
+
+\NormalTok{K1 <-}\StringTok{ }\KeywordTok{density}\NormalTok{(sites_location_ppp) }
+
+\KeywordTok{plot}\NormalTok{(K1, }\DataTypeTok{main=}\OtherTok{NULL}\NormalTok{, }\DataTypeTok{las=}\DecValTok{1}\NormalTok{)}
+\KeywordTok{contour}\NormalTok{(K1, }\DataTypeTok{add=}\OtherTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{GIS-workshop-for-participants-2020-0613_files/figure-latex/kernel-plot-all-sites-1.pdf}
+
+Is the hot spots we observed significant? We can simulate the site
+locations and testing our hypothesis to determine if the distribution is
+random or not random.
+
+\hypertarget{exercise-8-simulation-and-plot-the-histogram-7-mins}{%
+\subsection{Exercise 8: simulation and plot the histogram (7
+mins)}\label{exercise-8-simulation-and-plot-the-histogram-7-mins}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\CommentTok{# get the mean distance for our observation}
+\NormalTok{ann_p <-}\StringTok{ }\KeywordTok{mean}\NormalTok{(}\KeywordTok{nndist}\NormalTok{(sites_location_ppp, }\DataTypeTok{k=}\DecValTok{1}\NormalTok{))}
+\NormalTok{n     <-}\StringTok{ }\DecValTok{1000} \CommentTok{# Number of simulations}
+
+\NormalTok{ann_r <-}\StringTok{ }\KeywordTok{vector}\NormalTok{(}\DataTypeTok{length =}\NormalTok{ n) }\CommentTok{# an object for storing simulated ANN values}
+
+\CommentTok{# simulation}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\NormalTok{n)\{}
+\NormalTok{  rand_p   <-}\StringTok{ }\KeywordTok{rpoint}\NormalTok{(sites_location_ppp}\OperatorTok{$}\NormalTok{n, }
+                     \DataTypeTok{win =} \KeywordTok{as.owin}\NormalTok{(crop_DEM_df))  }\CommentTok{# generate random point locations}
+\NormalTok{  ann_r[i] <-}\StringTok{ }\KeywordTok{mean}\NormalTok{(}\KeywordTok{nndist}\NormalTok{(rand_p, }\DataTypeTok{k=}\DecValTok{1}\NormalTok{))  }\CommentTok{# tally the ANN values}
+\NormalTok{\}}
+
+\CommentTok{# plot the histogram and add our observed ANN value line}
+\KeywordTok{hist}\NormalTok{(ann_r, }\DataTypeTok{main=}\OtherTok{NULL}\NormalTok{, }\DataTypeTok{las=}\DecValTok{1}\NormalTok{, }\DataTypeTok{breaks=}\DecValTok{40}\NormalTok{, }
+     \DataTypeTok{col =} \StringTok{"bisque"}\NormalTok{, }
+     \DataTypeTok{xlim =} \KeywordTok{range}\NormalTok{(ann_p, ann_r))}
+\KeywordTok{abline}\NormalTok{(}\DataTypeTok{v =}\NormalTok{ ann_p, }\DataTypeTok{col=}\StringTok{"blue"}\NormalTok{) }\CommentTok{# the observed value}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{GIS-workshop-for-participants-2020-0613_files/figure-latex/simulation-all-sites-1.pdf}
+
+We have looked at the distribution of sites all together, but what if we
+want to focus on sites from a phase; for example, we want to explore
+Kofun period. We can filter out the phase we want and then use the same
+method to test the Kofun sites.
+
+\hypertarget{quiz-do-the-kofun-sites-ramdonly-distributed-or-non-ramdonly-distributed-the-pattern-is-clustterd-or-dispersed}{%
+\subsection{Quiz: Do the Kofun sites ramdonly distributed or
+non-ramdonly distributed? The pattern is clustterd or
+dispersed?}\label{quiz-do-the-kofun-sites-ramdonly-distributed-or-non-ramdonly-distributed-the-pattern-is-clustterd-or-dispersed}}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{sites_location_coords_kofun <-}
+\StringTok{  }\NormalTok{sites_location }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{st_coordinates}\NormalTok{() }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{as.data.frame}\NormalTok{ () }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{bind_cols}\NormalTok{(sites_location) }\OperatorTok{%>%}\StringTok{ }
+\StringTok{  }\KeywordTok{filter}\NormalTok{(Period }\OperatorTok{==}\StringTok{ "Kofun"}\NormalTok{)}
+
+\NormalTok{sites_location_ppp_kofun <-}\StringTok{ }\NormalTok{(}\KeywordTok{ppp}\NormalTok{(}\DataTypeTok{x =}\NormalTok{ sites_location_coords_kofun}\OperatorTok{$}\NormalTok{X,}
+                                 \DataTypeTok{y =}\NormalTok{ sites_location_coords_kofun}\OperatorTok{$}\NormalTok{Y,}
+                                 \KeywordTok{range}\NormalTok{(crop_DEM_df}\OperatorTok{$}\NormalTok{x),}
+                                 \KeywordTok{range}\NormalTok{(crop_DEM_df}\OperatorTok{$}\NormalTok{y))) }
+
+\NormalTok{K2 <-}\StringTok{ }\KeywordTok{density}\NormalTok{(sites_location_ppp_kofun) }
+
+\KeywordTok{plot}\NormalTok{(K2, }\DataTypeTok{main=}\OtherTok{NULL}\NormalTok{, }\DataTypeTok{las=}\DecValTok{1}\NormalTok{)}
+\KeywordTok{contour}\NormalTok{(K2, }\DataTypeTok{add=}\OtherTok{TRUE}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{GIS-workshop-for-participants-2020-0613_files/figure-latex/kernel-plot-kofun-1.pdf}
+
+\begin{Shaded}
+\begin{Highlighting}[]
+\NormalTok{ann_p <-}\StringTok{ }\KeywordTok{mean}\NormalTok{(}\KeywordTok{nndist}\NormalTok{(sites_location_ppp_kofun, }\DataTypeTok{k=}\DecValTok{1}\NormalTok{))}
+\NormalTok{n     <-}\StringTok{ }\DecValTok{1000} \CommentTok{# Number of simulations}
+
+\NormalTok{ann_r <-}\StringTok{ }\KeywordTok{vector}\NormalTok{(}\DataTypeTok{length =}\NormalTok{ n) }\CommentTok{# an object for storing simulated ANN values}
+
+\CommentTok{# simulation}
+\ControlFlowTok{for}\NormalTok{ (i }\ControlFlowTok{in} \DecValTok{1}\OperatorTok{:}\NormalTok{n)\{}
+\NormalTok{  rand_p   <-}\StringTok{ }\KeywordTok{rpoint}\NormalTok{(sites_location_ppp_kofun}\OperatorTok{$}\NormalTok{n, }
+                     \DataTypeTok{win =} \KeywordTok{as.owin}\NormalTok{(crop_DEM_df))  }\CommentTok{# Generate random point locations}
+\NormalTok{  ann_r[i] <-}\StringTok{ }\KeywordTok{mean}\NormalTok{(}\KeywordTok{nndist}\NormalTok{(rand_p, }\DataTypeTok{k=}\DecValTok{1}\NormalTok{))  }\CommentTok{# Tally the ANN values}
+\NormalTok{\}}
+
+\CommentTok{# plot the histogram and add our observed ANN value line}
+\KeywordTok{hist}\NormalTok{(ann_r, }\DataTypeTok{main=}\OtherTok{NULL}\NormalTok{, }\DataTypeTok{las=}\DecValTok{1}\NormalTok{, }\DataTypeTok{breaks=}\DecValTok{40}\NormalTok{, }
+     \DataTypeTok{col =} \StringTok{"bisque"}\NormalTok{, }
+     \DataTypeTok{xlim =} \KeywordTok{range}\NormalTok{(ann_p, ann_r))}
+\KeywordTok{abline}\NormalTok{(}\DataTypeTok{v =}\NormalTok{ ann_p, }\DataTypeTok{col=}\StringTok{"blue"}\NormalTok{)}
+\end{Highlighting}
+\end{Shaded}
+
+\includegraphics{GIS-workshop-for-participants-2020-0613_files/figure-latex/simulation-kofun-1.pdf}
+
+\end{document}

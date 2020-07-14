@@ -1,0 +1,30 @@
+This is XeTeX, Version 3.14159265-2.6-0.999991 (TeX Live 2019) (preloaded format=xelatex 2020.2.13)  13 JUN 2020 12:01
+entering extended mode
+ restricted \write18 enabled.
+ %&-line parsing enabled.
+**GIS-workshop-for-participants-2020-0613.tex
+(./GIS-workshop-for-participants-2020-0613.tex
+LaTeX2e <2020-02-02> patch level 1
+L3 programming layer <2020-02-11>
+
+! LaTeX Error: File `bxjsarticle.cls' not found.
+
+Type X to quit or <RETURN> to proceed,
+or enter new name. (Default extension: cls)
+
+Enter file name: 
+! Emergency stop.
+<read *> 
+         
+l.7 \usepackage
+               {lmodern}^^M 
+Here is how much of TeX's memory you used:
+ 23 strings out of 481780
+ 540 string characters out of 5935577
+ 238655 words of memory out of 5000000
+ 17127 multiletter control sequences out of 15000+600000
+ 532338 words of font info for 24 fonts, out of 8000000 for 9000
+ 14 hyphenation exceptions out of 8191
+ 14i,0n,17p,114b,10s stack positions out of 5000i,500n,10000p,200000b,80000s
+
+No pages of output.

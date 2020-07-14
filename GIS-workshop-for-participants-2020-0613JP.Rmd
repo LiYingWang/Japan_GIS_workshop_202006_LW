@@ -92,7 +92,7 @@ library(ggplot2) #ggplot2のアクティベート
 
 # plot basic world map／基本的な世界地図の描画 
 ggplot(data = world) +
-  geom_sf() + # adds a geometry stored in world／オブジェクトworldに収納されたジオメトリを描画に追加
+  geom_sf(fill = "lightyellow") + # adds a geometry stored in world／オブジェクトworldに収納されたジオメトリを描画に追加
   theme_minimal()
 ```
 
@@ -305,6 +305,7 @@ sites_location <- cbind(sites_location, elevation) #取得した標高値をデ�
 sites_location %>% #2つの時代の遺跡の標高の箱ひげ図を描画   
   ggplot(aes(Period, elevation)) + 
   geom_boxplot() +
+  geom_point() +
   theme_minimal()
 ```
 
